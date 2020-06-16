@@ -1,38 +1,63 @@
 package com.example.ntinfo;
 
-import android.app.DatePickerDialog;
+import android.app.ActionBar;
 import android.os.Bundle;
-import android.widget.DatePicker;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
-import java.util.Calendar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
 
 public class MainActivity extends AppCompatActivity {
-    public interface Service {
-        @GET("https://api.nytimes.com/svc/archive/v1/{year}/{month}.json?api-key=sbt8XxGLFQTfGZB8TTiJWTZxWpPMf74D")
-        Call<ArticleRespoce> getArtilcles(@Path("year") int y1, @Path("month") int i2);
-    }
+    private static MainActivity m;
 
-    int DIALOG_DATE = 1;
-    int myYear = 2011;
-    int myMonth = 02;
-    int myDay = 03;
+    static public void loadFragment(Fragment fragment) {
+        FragmentTransaction ft = m.getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.place, fragment);
+        ft.commit();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        m = this;
+        ActionBar b = getActionBar();
+        new DataGetter(MainActivity.this).GetTop();
         setContentView(R.layout.first_page);
-        Retrofit retrofit = new Retrofit.Builder()
+        loadFragment(new DataSelectorFragment());
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.menu);
+        navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.All:
+                        if (DataGetter.isAnyData)
+                            loadFragment(new ListFragment(DataGetter.result));
+                        else {
+                            Toast.makeText(MainActivity.this, "Ошибка, нет загруженных данных, выберете месяц и год!",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        return true;
+                    case R.id.Top:
+                        if (DataGetter.TisAnyData)
+                            loadFragment(new ListFragment(DataGetter.Tresult));
+                            //* loadFragment(new ListFragment(DataGetter.result));*/
+                        else {
+                            Toast.makeText(MainActivity.this, "Ошибка, нет загруженных данных, проверьте подключение к сети!",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        return true;
+                }
+                return false;
+            }
+        });
+    /*    Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl("https://api.nytimes.com/")//unused
                 .build();
@@ -49,22 +74,26 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, t.getMessage(),
                         Toast.LENGTH_LONG).show();
             }
-        });
-        DatePickerDialog tpd = new DatePickerDialog(this, myCallBack, myYear, myMonth, myDay);
-        tpd.getDatePicker().setMaxDate(Calendar.getInstance().getTime().getTime());
-        Calendar c = Calendar.getInstance();
-        c.set(1860, 0, 1);
-        tpd.getDatePicker().setMinDate(c.getTime().getTime());
-        tpd.show();
+        });*/
     }
 
-    DatePickerDialog.OnDateSetListener myCallBack = new DatePickerDialog.OnDateSetListener() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.upbar, menu);
+        return true;
+    }
 
-        public void onDateSet(DatePicker view, int year, int monthOfYear,
-                              int dayOfMonth) {
-            myYear = year;
-            myMonth = monthOfYear;
-            myDay = dayOfMonth;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // получим идентификатор выбранного пункта меню
+        int id = item.getItemId();
+        // Операции для выбранного пункта меню
+        switch (id) {
+            case R.id.action_settings:
+                loadFragment(new DataSelectorFragment());
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-    };
+    }
 }

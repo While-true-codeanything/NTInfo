@@ -1,11 +1,9 @@
 package com.example.ntinfo;
 
-public class Response
-{
+public class Response {
     private Docs[] docs;
 
-    public Docs[] getDocs ()
-    {
+    public Docs[] getDocs() {
         return docs;
     }
 }

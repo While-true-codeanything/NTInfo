@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">NTinfo</string>
+    <string name="Col">Количество слов: </string>
+    <string name="Source">Источник: </string>
+    <string name="Type">Тип: </string>
+    <string name="MType">Тип материала: </string>
+    <string name="Ref">Ссылка на полный материал:\n</string>
+    <string name="select_month_and_year">Select month and year</string>
+    <string name="the_selected_day_is_not_important_only_the_year_and_month_are_important">The selected day is not important, only the year and month are important</string>
+    <string name="i_do_not_own_the_copyrights_to_any_materials_presented_in_app">I do not own the copyrights to any materials presented in app</string>
+    <string name="Date">Дата публикации: </string>
+    <string name="Sec">Секция: </string>
+    <string name="Mtype2">Тип материала: </string>
+    <string name="Ref2">Ссылка на полный материал:\n</string>
 </resources>
